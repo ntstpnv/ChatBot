@@ -1,0 +1,8 @@
+.idea/
+.venv/
+__pycache__/
+.ruff_cache/
+uv.lock
+.env
+
+qwert.py
