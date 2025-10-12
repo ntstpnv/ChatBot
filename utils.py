@@ -1,19 +1,26 @@
 from io import BytesIO
-from random import choice, sample
+from random import choice
+from re import fullmatch
 
 from gtts import gTTS
-from sqlalchemy import Row, Sequence
 
-from cache import CACHE
+from cache import VARIANTS
 
 
-def get_random_words(words: Sequence[Row]) -> tuple[str, list[str]]:
-    random_words = sample(words, 4)
-    return random_words[0][0], [word[1] for word in random_words]
+def check_en_word(en_word: str) -> bool:
+    return bool(fullmatch(r"^[a-z -]+$", en_word))
+
+
+def check_ru_word(ru_word: str) -> bool:
+    return bool(fullmatch(r"^[а-яё -]+$", ru_word))
+
+
+def unpack_words(words: list[tuple[str, str]]) -> tuple[str, list[str]]:
+    return words[0][0], [word[1] for word in words]
 
 
 def get_answers() -> dict[str, int]:
-    return choice(CACHE.VARIANTS)
+    return choice(VARIANTS)
 
 
 def get_audio(en_word: str) -> BytesIO:
@@ -26,7 +33,6 @@ def get_audio(en_word: str) -> BytesIO:
 
 def get_text(en_word: str, ru_words: list[str], answers: dict[str, int]) -> str:
     return (
-        f""
         f"Выберите верный перевод\n"
         f"{en_word.upper()}\n\n"
         f"1 {ru_words[answers['1']].capitalize()}\n"

@@ -9,18 +9,14 @@ class Base(DeclarativeBase):
     }
 
 
-ownerships = Table(
-    "ownerships",
+owners = Table(
+    "owners",
     Base.metadata,
     Column(
-        "user_id",
-        ForeignKey("users.user_id", ondelete="CASCADE"),
-        primary_key=True,
+        "user_id", ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
     ),
     Column(
-        "word_id",
-        ForeignKey("words.word_id", ondelete="CASCADE"),
-        primary_key=True,
+        "word_id", ForeignKey("words.word_id", ondelete="CASCADE"), primary_key=True
     ),
 )
 
@@ -32,8 +28,7 @@ class User(Base):
     tele_id: Mapped[str] = mapped_column(String(20), unique=True)
 
     words: Mapped[list["Word"]] = relationship(
-        secondary=ownerships,
-        back_populates="users",
+        secondary=owners, back_populates="users", lazy="selectin"
     )
 
 
@@ -49,6 +44,5 @@ class Word(Base):
     ru_word: Mapped[str] = mapped_column(unique=True)
 
     users: Mapped[list["User"]] = relationship(
-        secondary=ownerships,
-        back_populates="words",
+        secondary=owners, back_populates="words", lazy="selectin"
     )
