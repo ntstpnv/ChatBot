@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Column, ForeignKey, SmallInteger, String, Table
+from sqlalchemy import Column, ForeignKey, SmallInteger, String, Table
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -34,10 +34,6 @@ class User(Base):
 
 class Word(Base):
     __tablename__ = "words"
-    __table_args__ = (
-        CheckConstraint("en_word ~ '^[a-z -]+$'"),
-        CheckConstraint("ru_word ~ '^[а-яё -]+$'"),
-    )
 
     word_id: Mapped[int] = mapped_column(primary_key=True)
     en_word: Mapped[str] = mapped_column(unique=True)

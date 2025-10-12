@@ -73,7 +73,7 @@ async def preparation(u: Update, c: CallbackContext) -> int:
     c.user_data["message_id"] = (
         await c.bot.send_message(
             c.user_data["chat_id"],
-            "Введите английское слово:",
+            "Введите английское слово",
         )
     ).message_id
 
@@ -81,35 +81,54 @@ async def preparation(u: Update, c: CallbackContext) -> int:
 
 
 async def en_word(u: Update, c: CallbackContext) -> int:
+    await u.message.delete()
     answer = u.message.text.lower()
 
     if check_en_word(answer):
         c.user_data["en_word"] = answer
 
+        text = f"Получено: {answer}\n\nВведите русский перевод"
+
         await sleep(0.4)
-        await u.message.reply_text("Введите русский перевод:")
+        await c.bot.edit_message_text(
+            text, c.user_data["chat_id"], c.user_data["message_id"]
+        )
 
         return STATE3
 
+    text = f"Получено: {answer}\n\nОшибка! Попробуйте еще раз"
+
     await sleep(0.4)
-    await u.message.reply_text("Недопустимые символы! Введите английское слово:")
+    await c.bot.edit_message_text(
+        text, c.user_data["chat_id"], c.user_data["message_id"]
+    )
 
     return STATE2
 
 
 async def ru_word(u: Update, c: CallbackContext) -> int:
+    await u.message.delete()
     answer = u.message.text.lower()
 
     if check_ru_word(answer):
         await add_word(c.user_data["tele_id"], c.user_data["en_word"], answer)
 
         await sleep(0.2)
-        await u.message.reply_text("Слово добавлено", reply_markup=REPLY_MARKUP.START)
+        await c.bot.edit_message_text(
+            "Cлово добавлено",
+            c.user_data["chat_id"],
+            c.user_data["message_id"],
+            reply_markup=REPLY_MARKUP.START,
+        )
 
         return STATE1
 
+    text = f"Получено: {answer}\n\nОшибка! Попробуйте еще раз"
+
     await sleep(0.4)
-    await u.message.reply_text("Недопустимые символы! Введите русский перевод:")
+    await c.bot.edit_message_text(
+        text, c.user_data["chat_id"], c.user_data["message_id"]
+    )
 
     return STATE3
 
